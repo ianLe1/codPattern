@@ -1,372 +1,67 @@
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-        classpath 'org.benf:cfr:0.152'  // Java decompiler for extractDependencySources
-    }
-}
-
-
 plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.2.0.7-dev-SNAPSHOT'
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
 }
 
-apply plugin: 'org.spongepowered.mixin'
+group = 'com.cdp'
+version = '0.8.6b-1.21.1-port'
+base { archivesName = 'codpattern' }
 
-version = mod_version
-group = mod_group_id
-
-// The main mod is a standalone Gradle build.  The Zombies addon owns the
-// reverse dependency when it is run from its own checkout, so this project
-// never discovers or includes addon sources.
-def hasZombiesAddon = false
-ext.hasZombiesAddon = false
-
-base {
-    archivesName = mod_id
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
 }
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-
-    mappings channel: mapping_channel, version: mapping_version
-
-    copyIdeResources = true
-
-    runs {
-        // applies to all the run configs below
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
-        }
-
-        gameTestServer {
-            workingDirectory project.file(findProperty('gameTestRunDir') ?: 'run')
-            property 'forge.enabledGameTestNamespaces', mod_id
-            environment 'MOD_CLASSES', "${mod_id}%%${layout.buildDirectory.dir('gametestMod/codpattern').get().asFile.absolutePath}"
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
-    }
-}
-
-mixin {
-    add sourceSets.main, "codpattern.refmap.json"
-    config "codpattern.mixins.json"
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven {
-        name = "Curse Maven"
-        url = "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-    }
-    flatDir { dirs 'libs' }
+    mavenCentral()
+    maven { url = 'https://maven.neoforged.net/releases' }
 }
 
-def requestedTaskNames = gradle.startParameter.taskNames.collect { it.toLowerCase() }
-def dedicatedServerRunRequested = requestedTaskNames.any { taskName ->
-    taskName.contains('server')
-            || taskName.contains('gametest')
-            || taskName.contains('runsplitround4verificationgate')
-            || taskName.contains('runsplitround5verificationgate')
-            || taskName.contains('runsplitround6verificationgate')
+neoForge {
+    version = '21.1.253'
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run/client')
+        }
+        server {
+            server()
+            gameDirectory = project.file('run/server')
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        codpattern {
+            sourceSet sourceSets.main
+        }
+    }
 }
-def withLrTactical = (findProperty('withLrTactical') ?: 'false').toString().toBoolean()
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6654541-sources-6654543")
-    compileOnly fg.deobf("maven.modrinth:lr-tactical:0.3.0")
-    if (withLrTactical) {
-        runtimeOnly fg.deobf("maven.modrinth:lr-tactical:0.3.0")
-    }
-    //implementation fg.deobf("maven.modrinth:cloth-config:11.1.136+forge")
-    if (!dedicatedServerRunRequested) {
-        runtimeOnly fg.deobf("maven.modrinth:physicsmod:JkM3OTEl")
-        runtimeOnly fg.deobf("maven.modrinth:taczaddon:1.1.6")
-    }
-    //runtimeOnly fg.deobf("curse.maven:embeddium-908741:5175031")
-    //runtimeOnly fg.deobf("curse.maven:oculus-581495:5299671")
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
+    // 1.21.1 本地生产 jar（SRG 命中数=0，生产名即官方名，可直接参与编译）
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 
-tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
-    ]
-    inputs.properties replaceProperties
+    compileOnly 'io.github.llamalad7:mixinextras-common:0.5.3'
+    annotationProcessor 'io.github.llamalad7:mixinextras-common:0.5.3'
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
-}
-
-tasks.register('syncGameTestStructures', Copy) {
-    group = 'verification'
-    description = 'Copy GameTest SNBT templates into the run directory used by Forge GameTest.'
-    from layout.projectDirectory.dir('src/main/resources/gameteststructures')
-    into project.file((findProperty('gameTestRunDir') ?: 'run').toString() + '/gameteststructures')
-    include '**/*.snbt'
-}
-
-def legacyMergedGameTestModRoot = layout.buildDirectory.dir('gametestMod/main')
-
-tasks.register('syncGameTestModClasses', Sync) {
-    group = 'verification'
-    description = 'Build the main-only exploded mod root used by Forge GameTest.'
-    into layout.buildDirectory.dir('gametestMod/codpattern')
-    from(sourceSets.main.output.resourcesDir) {
-        into '.'
-    }
-    from(sourceSets.main.output.classesDirs) {
-        into '.'
-    }
-    dependsOn tasks.named('classes')
-    doFirst {
-        File legacyRoot = legacyMergedGameTestModRoot.get().asFile
-        File expectedParent = layout.buildDirectory.dir('gametestMod').get().asFile
-        if (legacyRoot.name != 'main'
-                || legacyRoot.canonicalFile.parentFile != expectedParent.canonicalFile) {
-            throw new GradleException("Refusing to remove unexpected legacy GameTest root: ${legacyRoot}")
-        }
-        delete legacyRoot
-    }
-}
-
-tasks.matching { it.name == 'runGameTestServer' }.configureEach {
-    dependsOn tasks.named('syncGameTestStructures')
-    dependsOn tasks.named('syncGameTestModClasses')
-}
-
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1',
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-
-    finalizedBy 'reobfJar'
-}
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
+    // TaCZ 依赖的数学库（TaCZ 自带 jarjar，运行期提供）
+    compileOnly 'org.apache.commons:commons-math3:3.6.1'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xmaxerrs' << '3000'
+    options.compilerArgs << '-Xlint:-deprecation' << '-Xlint:-removal'
 }
 
-tasks.register('runMainCompatibilitySuite') {
-    group = 'verification'
-    description = 'Run all main-owned common, Frontline, Team Deathmatch, PVP, and fixture compatibility gates.'
-    dependsOn 'runCommonCompatSuite'
-    dependsOn 'runPvpBaselineCompatSuite'
-    dependsOn 'runMainPhase0DataFixtureCompat'
+tasks.named('jar', Jar).configure {
+    manifest.attributes([
+            'MixinConfigs'         : 'codpattern.mixins.json',
+            'Specification-Title'  : 'COD Pattern',
+            'Specification-Version': project.version,
+            'Implementation-Title' : 'codpattern',
+            'Implementation-Version': project.version,
+    ])
 }
-
-apply from: 'gradle/mode-split-test-ledger.gradle'
-apply from: 'gradle/mode-split-phase0.gradle'
-apply from: 'gradle/mode-split-phase6.gradle'
-apply from: 'gradle/mode-split-phase7.gradle'
-apply from: 'gradle/mode-split-main-only-distribution.gradle'
-apply from: 'gradle/snapshot.gradle'
-
-// 提取依赖到 libs-extracted，便于 Agent 和 IDE 访问
-// 运行: gradlew extractDependencyLibs
-// 若需源码：用 CFR/JD-GUI 反编译 libs-extracted 中的 JAR 到 libs-src/
-tasks.register('extractDependencyLibs', Copy) {
-    group = 'documentation'
-    description = 'Copy TaCZ, LR Tactical, Cloth Config JARs to libs-extracted/ for reference. Decompile to libs-src/ for agent source access.'
-    from configurations.compileClasspath
-    into layout.projectDirectory.dir('libs-extracted')
-    include { f ->
-        def name = f.name.toLowerCase()
-        name.contains('timeless-and-classics') || name.contains('tacz') ||
-        name.contains('lr-tactical') || name.contains('lrtactical') ||
-        name.contains('cloth-config') || name.contains('fpsmatch') ||
-        name.contains('physicsmod')
-    }
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    doLast {
-        println "Extracted to libs-extracted/. For decompiled sources: use CFR (https://www.benf.org/other/cfr/) or JD-GUI, output to libs-src/"
-    }
-}
-
-// 解压+反编译依赖到 libs-src（含 assets、data 等资源 + Java 源码）
-// 运行: gradlew decompileDependencies
-tasks.register('decompileDependencies') {
-    group = 'documentation'
-    description = 'Extract full JAR (assets, data, etc.) and decompile .class to .java in libs-src/'
-    dependsOn extractDependencyLibs
-    def libsExtracted = file("${layout.projectDirectory}/libs-extracted")
-    def libsSrc = file("${layout.projectDirectory}/libs-src")
-    inputs.files(fileTree(libsExtracted) { include '*.jar' })
-    outputs.dir(libsSrc)
-
-    doLast {
-        libsSrc.mkdirs()
-        fileTree(libsExtracted) { include '*.jar' }.each { jar ->
-            def outDir = new File(libsSrc, jar.name.replaceAll(/\.jar$/, ''))
-            outDir.mkdirs()
-
-            // 1. 完整解压 JAR（assets、data、META-INF、.class 等）
-            project.copy {
-                from project.zipTree(jar)
-                into outDir
-                duplicatesStrategy = DuplicatesStrategy.INCLUDE
-            }
-            println "Extracted ${jar.name} (assets, data, etc.) -> ${outDir}"
-
-            // 2. CFR 反编译 .class -> .java
-            project.javaexec {
-                mainClass = 'org.benf.cfr.reader.Main'
-                classpath = buildscript.configurations.classpath
-                args jar.absolutePath, '--outputdir', outDir.absolutePath, '--silent', 'true'
-            }
-            println "Decompiled .class -> .java for ${jar.name}"
-        }
-    }
-}
-
-tasks.register('dumpSrcJava') {
-    group = 'documentation'
-    description = 'Dump all Java sources under src into src_dump.txt'
-    def outputFile = file('src_dump.txt')
-    def javaSources = fileTree('src') {
-        include '**/*.java'
-    }
-    inputs.files(javaSources)
-    outputs.file(outputFile)
-
-    doLast {
-        def files = javaSources.files.toList().sort { it.path }
-        outputFile.text = ''
-        files.each { f ->
-            def relPath = project.projectDir.toPath().relativize(f.toPath()).toString()
-            def content = f.getText('UTF-8')
-            outputFile << "// --- ${relPath} ---\n"
-            outputFile << content
-            if (!content.endsWith('\n')) {
-                outputFile << '\n'
-            }
-            outputFile << '\n'
-        }
-        println "Wrote ${files.size()} files to ${outputFile}"
-    }
-}
-
-def normalizeModsDir(Object rawValue) {
-    if (rawValue == null) {
-        return null
-    }
-    def raw = rawValue.toString().trim()
-    if (raw.isEmpty()) {
-        return null
-    }
-    def winMatcher = (raw =~ /^([A-Za-z]):[\\/](.*)$/)
-    if (winMatcher.matches()) {
-        def drive = winMatcher[0][1].toLowerCase()
-        def rest = winMatcher[0][2].replace('\\', '/')
-        return "/mnt/${drive}/${rest}"
-    }
-    return raw
-}
-
-tasks.register('buildAndCopyToMods') {
-    group = 'distribution'
-    description = 'Compatibility alias for deployment of the main mod only.'
-    dependsOn tasks.named('deploySplitMainOnly')
-}
-
-tasks.register('runMapStorageCompat', JavaExec) {
-    group = 'verification'
-    description = 'Exercise map relocation against temporary files without touching runtime saves.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.cdp.codpattern.config.storage.MapStorageMigrationCompatTest'
-    dependsOn tasks.named('testClasses')
-}
-
-
-tasks.register('runForceEndCompat', JavaExec) {
-    group = 'verification'
-    description = 'Inject termination, recovery, persistence, retry, and lease failures.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.cdp.codpattern.app.match.runtime.termination.ForceEndCoordinatorCompatTest'
-    dependsOn tasks.named('testClasses')
-}
-tasks.named('runMainCompatibilitySuite') { dependsOn tasks.named('runForceEndCompat') }
-
-// Regression coverage for map rename definitions and shared input rules.
-tasks.register('runMapRenameCompat', JavaExec) {
-    group = 'verification'
-    description = 'Check map rename serialization, diagnostics and name validation.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.cdp.codpattern.app.match.management.MapRenameCompatTest'
-    dependsOn tasks.named('testClasses')
-}
-tasks.named('runMainCompatibilitySuite') { dependsOn tasks.named('runMapRenameCompat') }
-
-// Save-local end teleport defaults and shared editor state.
-tasks.register('runMapDefaultsCompat', JavaExec) {
-    group = 'verification'
-    description = 'Check isolated map defaults, failed writes and end position drafts.'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'com.cdp.codpattern.config.storage.MapDefaultsCompatTest'
-    dependsOn tasks.named('testClasses')
-}
-tasks.named('runMainCompatibilitySuite') { dependsOn tasks.named('runMapDefaultsCompat') }

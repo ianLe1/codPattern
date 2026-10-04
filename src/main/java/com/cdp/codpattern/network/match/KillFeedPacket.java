@@ -1,9 +1,10 @@
 package com.cdp.codpattern.network.match;
 
 import com.cdp.codpattern.network.handler.ClientPacketBridge;
+import com.cdp.codpattern.adapter.neoforge.network.PayloadBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -23,14 +24,14 @@ public class KillFeedPacket {
     public KillFeedPacket(FriendlyByteBuf buf) {
         this.killerName = buf.readUtf();
         this.victimName = buf.readUtf();
-        this.weaponStack = buf.readItem();
+        this.weaponStack = PayloadBuf.readItem(buf);
         this.blunder = buf.readBoolean();
     }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(killerName);
         buf.writeUtf(victimName);
-        buf.writeItem(weaponStack);
+        PayloadBuf.writeItem(buf, weaponStack);
         buf.writeBoolean(blunder);
     }
 

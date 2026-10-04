@@ -3,7 +3,7 @@ package com.cdp.codpattern.adapter.forge.network;
 import com.cdp.codpattern.network.map.MapAdminRequestPacket;
 import com.cdp.codpattern.network.map.MapAdminResponsePacket;
 import com.cdp.codpattern.network.map.OpenMapManagementScreenS2CPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class MapAdminPacketRegistrar {
     private MapAdminPacketRegistrar() { }

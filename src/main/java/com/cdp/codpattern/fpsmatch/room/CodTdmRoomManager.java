@@ -11,22 +11,23 @@ import com.cdp.codpattern.adapter.forge.network.ModNetworkChannel;
 import com.cdp.codpattern.network.match.RoomSyncInfo;
 import com.cdp.codpattern.network.match.RoomListSyncPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /**
  * 房间管理器（单例）
  * 从 FPSMCore 获取已注册模式的房间摘要
  */
-@Mod.EventBusSubscriber(modid = CodPatternConstants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CodPatternConstants.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class CodTdmRoomManager {
     private static final long ROOM_PUSH_DIRTY_THROTTLE_MS = 350L;
     private static final long ROOM_PUSH_STEADY_REFRESH_MS = 1000L;
@@ -147,10 +148,7 @@ public class CodTdmRoomManager {
     }
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) {
-            return;
-        }
+    public static void onServerTick(ServerTickEvent.Post event) {
         getInstance().flushPendingRoomPush();
     }
 }

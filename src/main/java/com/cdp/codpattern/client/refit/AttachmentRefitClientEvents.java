@@ -2,20 +2,19 @@ package com.cdp.codpattern.client.refit;
 
 import com.cdp.codpattern.CodPatternConstants;
 import com.cdp.codpattern.compat.tacz.client.CodGunRefitScreen;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT)
 public class AttachmentRefitClientEvents {
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            AttachmentRefitClientState.tryOpenIfReady();
-        }
+    public static void onClientTick(ClientTickEvent.Post event) {
+        AttachmentRefitClientState.tryOpenIfReady();
     }
 
     @SubscribeEvent

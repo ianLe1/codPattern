@@ -9,6 +9,7 @@ import com.cdp.codpattern.core.refit.AttachmentPresetUtil;
 import com.cdp.codpattern.client.gui.screen.WeaponMenuScreen;
 import com.cdp.codpattern.network.SaveAttachmentPresetPacket;
 import com.cdp.codpattern.adapter.forge.network.ModNetworkChannel;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
@@ -158,7 +159,7 @@ public class AttachmentRefitClientState {
             reset();
             return;
         }
-        String nbtString = gunStack.hasTag() ? gunStack.getTag().toString() : "";
+        String nbtString = ItemNbt.has(gunStack) ? ItemNbt.get(gunStack).toString() : "";
         String payload = AttachmentPresetUtil.buildPresetFromGun(gunStack).toString();
         ModNetworkChannel.sendToServer(new SaveAttachmentPresetPacket(bagId, slot, payload, nbtString));
         reset();

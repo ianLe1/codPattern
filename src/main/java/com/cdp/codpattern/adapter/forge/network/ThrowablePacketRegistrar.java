@@ -3,7 +3,7 @@ package com.cdp.codpattern.adapter.forge.network;
 import com.cdp.codpattern.network.StartThrowableUsePacket;
 import com.cdp.codpattern.network.StopThrowableUsePacket;
 import com.cdp.codpattern.network.SyncThrowableInventoryPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class ThrowablePacketRegistrar {
     private ThrowablePacketRegistrar() {

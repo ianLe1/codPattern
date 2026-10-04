@@ -4,7 +4,7 @@ import com.cdp.codpattern.config.weaponfilter.WeaponFilterConfig;
 import com.cdp.codpattern.config.weaponfilter.WeaponFilterClientCache;
 import com.google.gson.Gson;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

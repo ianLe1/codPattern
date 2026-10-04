@@ -1,6 +1,6 @@
 package com.cdp.codpattern.client.extension;
 
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
 /** Client-only overlay registration contribution. */
 public interface ModeGuiOverlayContributor {
@@ -10,5 +10,5 @@ public interface ModeGuiOverlayContributor {
         return 0;
     }
 
-    void register(RegisterGuiOverlaysEvent event);
+    void register(RegisterGuiLayersEvent event);
 }

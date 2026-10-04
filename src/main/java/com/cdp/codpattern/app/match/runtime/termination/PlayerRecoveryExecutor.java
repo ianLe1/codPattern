@@ -53,15 +53,15 @@ public final class PlayerRecoveryExecutor {
                 throw new IllegalStateException("Player control restoration not confirmed");
         });
         for (var attribute : record.attributes.entrySet()) step(record, player, "attribute:" + attribute.getKey(), () -> {
-            var type = BuiltInRegistries.ATTRIBUTE.getOptional(new ResourceLocation(attribute.getValue().attribute())).orElseThrow();
+            var type = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(attribute.getValue().attribute())).orElseThrow();
             var instance = player.getAttribute(type);
             if (instance != null) {
-                UUID modifier = UUID.fromString(attribute.getKey());
+                ResourceLocation modifier = ResourceLocation.parse(attribute.getKey());
                 var current = instance.getModifier(modifier);
                 var expected = attribute.getValue();
-                if (current != null && (!current.getName().equals(expected.name())
-                        || Double.compare(current.getAmount(), expected.amount()) != 0
-                        || current.getOperation().toValue() != expected.operation()))
+                if (current != null && (!current.id().toString().equals(expected.name())
+                        || Double.compare(current.amount(), expected.amount()) != 0
+                        || current.operation().id() != expected.operation()))
                     throw new IllegalStateException("Attribute ownership conflict: " + modifier);
                 instance.removeModifier(modifier);
                 if (instance.getModifier(modifier) != null) throw new IllegalStateException("Attribute modifier remains");
@@ -127,7 +127,7 @@ public final class PlayerRecoveryExecutor {
         }
     }
     public static ResourceKey<Level> dimension(String id) {
-        return ResourceKey.create(Registries.DIMENSION, new ResourceLocation(id));
+        return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(id));
     }
     public static ServerLevel level(MinecraftServer server, String id) { return server.getLevel(dimension(id)); }
     private boolean teleport(ServerPlayer player, PlayerRecoveryRecord.Target target) {

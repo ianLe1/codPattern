@@ -1,5 +1,6 @@
 package com.cdp.codpattern.app.match.gametest;
 
+import net.minecraft.server.network.CommonListenerCookie;
 import com.cdp.codpattern.app.match.management.MapManagementService;
 import com.cdp.codpattern.config.storage.ServerMapStorage;
 import com.mojang.authlib.GameProfile;
@@ -9,6 +10,7 @@ import com.phasetranscrystal.fpsmatch.common.item.MapCreatorToolModes;
 import com.phasetranscrystal.fpsmatch.common.packet.MapCreatorToolActionC2SPacket;
 import com.phasetranscrystal.fpsmatch.common.packet.OpenMapCreatorToolScreenS2CPacket;
 import com.phasetranscrystal.fpsmatch.core.FPSMCore;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -17,15 +19,15 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -78,12 +80,12 @@ public final class MapToolGameTests {
         MapCreatorTool.setSelectedType(stack, "zombies");
         MapCreatorTool.setDraftMapName(stack, "old-draft");
         MapCreatorTool.setBlockPos(stack, MapCreatorTool.BLOCK_POS_TAG_1, new BlockPos(1, 2, 3));
-        var original = stack.getTag().copy();
+        var original = ItemNbt.get(stack).copy();
         var data = OpenMapCreatorToolScreenS2CPacket.fromStack(stack, all);
         helper.assertTrue(data.selectedType().equals("teamdeathmatch") && data.availableTypes().size() == 2,
                 "old addon selection falls back to the first supported mode");
         helper.assertTrue(data.draftMapName().equals("old-draft") && data.pos1().equals(new BlockPos(1, 2, 3))
-                && original.equals(stack.getTag()), "opening preserves draft name, coordinates and stored NBT");
+                && original.equals(ItemNbt.get(stack)), "opening preserves draft name, coordinates and stored NBT");
         helper.assertTrue(OpenMapCreatorToolScreenS2CPacket.fromStack(stack, List.of("frontline")).selectedType().equals("frontline"),
                 "a single available built-in mode is selected");
         var empty = OpenMapCreatorToolScreenS2CPacket.fromStack(stack, List.of("zombies"));
@@ -98,16 +100,16 @@ public final class MapToolGameTests {
         var stack = new ItemStack(FPSMItemRegister.MAP_CREATOR_TOOL.get());
         player.setItemInHand(InteractionHand.MAIN_HAND, stack);
         MapCreatorTool.setDraftMapName(stack, "preserved");
-        var original = stack.getTag().copy();
+        var original = ItemNbt.get(stack).copy();
         String name = "tool-" + UUID.randomUUID().toString().substring(0, 8);
         var core = FPSMCore.getInstance();
         for (var action : MapCreatorToolActionC2SPacket.Action.values()) {
             new MapCreatorToolActionC2SPacket(action, "zombies", name, BlockPos.ZERO, new BlockPos(3, 3, 3)).process(player);
-            helper.assertTrue(original.equals(stack.getTag()), "rejected addon request must not change the draft");
+            helper.assertTrue(original.equals(ItemNbt.get(stack)), "rejected addon request must not change the draft");
         }
         new MapCreatorToolActionC2SPacket(MapCreatorToolActionC2SPacket.Action.CREATE, "", name,
                 BlockPos.ZERO, new BlockPos(3, 3, 3)).process(player);
-        helper.assertTrue(original.equals(stack.getTag()) && core.getMapByName(name).isEmpty(),
+        helper.assertTrue(original.equals(ItemNbt.get(stack)) && core.getMapByName(name).isEmpty(),
                 "empty creation mode cannot write a draft or create a map");
         new MapCreatorToolActionC2SPacket(MapCreatorToolActionC2SPacket.Action.SAVE_DRAFT, "", "empty-mode-draft",
                 BlockPos.ZERO, null).process(player);
@@ -118,10 +120,10 @@ public final class MapToolGameTests {
         helper.assertTrue(MapCreatorTool.getSelectedType(stack).equals("frontline"), "saved aliases are canonicalized");
         var denied = player(helper, false, new ArrayList<>());
         denied.setItemInHand(InteractionHand.MAIN_HAND, stack);
-        var beforeDenied = stack.getTag().copy();
+        var beforeDenied = ItemNbt.get(stack).copy();
         new MapCreatorToolActionC2SPacket(MapCreatorToolActionC2SPacket.Action.CREATE, "frontline", name,
                 BlockPos.ZERO, new BlockPos(3, 3, 3)).process(denied);
-        helper.assertTrue(beforeDenied.equals(stack.getTag()) && core.getMapByName(name).isEmpty(),
+        helper.assertTrue(beforeDenied.equals(ItemNbt.get(stack)) && core.getMapByName(name).isEmpty(),
                 "non-administrators cannot create maps");
         var folder = ServerMapStorage.get(player.server).paths().map("builtin/frontline", name);
         helper.assertTrue(!Files.exists(folder), "rejected requests create no built-in map directory");
@@ -173,14 +175,15 @@ public final class MapToolGameTests {
 
     static ServerPlayer player(GameTestHelper helper, boolean administrator, List<Packet<?>> sent) {
         var server = helper.getLevel().getServer();
-        var player = new ServerPlayer(server, helper.getLevel(), new GameProfile(UUID.randomUUID(), "map-tool-test")) {
+        var player = new ServerPlayer(server, helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "map-tool-test"), net.minecraft.server.level.ClientInformation.createDefault()) {
             @Override public boolean hasPermissions(int permission) { return administrator && permission <= 2; }
         };
         var connection = new Connection(PacketFlow.SERVERBOUND) {
             @Override public void send(Packet<?> packet) { sent.add(packet); }
             @Override public void send(Packet<?> packet, PacketSendListener listener) { sent.add(packet); }
         };
-        player.connection = new ServerGamePacketListenerImpl(server, connection, player) {
+        player.connection = new ServerGamePacketListenerImpl(server, connection, player, CommonListenerCookie.createInitial(player.getGameProfile(), false)) {
             @Override public void send(Packet<?> packet) { sent.add(packet); }
             @Override public void send(Packet<?> packet, PacketSendListener listener) { sent.add(packet); }
         };

@@ -3,7 +3,7 @@ package com.cdp.codpattern.compat.physicsmod;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 import java.lang.reflect.Method;
 

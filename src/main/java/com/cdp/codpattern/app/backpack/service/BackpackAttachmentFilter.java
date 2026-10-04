@@ -1,5 +1,6 @@
 package com.cdp.codpattern.app.backpack.service;
 
+import com.cdp.codpattern.adapter.neoforge.registry.RegistryAccessHolder;
 import com.cdp.codpattern.compat.tacz.TaczGatewayProvider;
 import com.cdp.codpattern.config.weaponfilter.WeaponFilterConfig;
 import com.tacz.guns.api.item.IGun;
@@ -42,11 +43,11 @@ public final class BackpackAttachmentFilter {
             if (type == AttachmentType.NONE || !iGun.allowAttachmentType(gunStack, type)) {
                 continue;
             }
-            ItemStack attachmentStack = iGun.getAttachment(gunStack, type);
+            ItemStack attachmentStack = iGun.getAttachment(RegistryAccessHolder.get(), gunStack, type);
             if (attachmentStack.isEmpty() || !isAttachmentBlocked(filterConfig, attachmentStack)) {
                 continue;
             }
-            iGun.unloadAttachment(gunStack, type);
+            iGun.unloadAttachment(RegistryAccessHolder.get(), gunStack, type);
             changed = true;
         }
         return changed;

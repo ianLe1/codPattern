@@ -169,13 +169,20 @@ public final class CombatMarkerWorldRenderer {
         float green = ((color >>> 8) & 0xFF) / 255.0f;
         float blue = (color & 0xFF) / 255.0f;
 
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, left, top, 0.0f).color(red, green, blue, alpha).endVertex();
-        bufferBuilder.vertex(matrix, left, bottom, 0.0f).color(red, green, blue, alpha).endVertex();
-        bufferBuilder.vertex(matrix, right, bottom, 0.0f).color(red, green, blue, alpha).endVertex();
-        bufferBuilder.vertex(matrix, right, top, 0.0f).color(red, green, blue, alpha).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferBuilder bufferBuilder = Tesselator.getInstance()
+                .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        emitVertex(bufferBuilder, matrix, left, top, red, green, blue, alpha);
+        emitVertex(bufferBuilder, matrix, left, bottom, red, green, blue, alpha);
+        emitVertex(bufferBuilder, matrix, right, bottom, red, green, blue, alpha);
+        emitVertex(bufferBuilder, matrix, right, top, red, green, blue, alpha);
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+    }
+
+    private static void emitVertex(BufferBuilder bufferBuilder, Matrix4f matrix,
+                                   float x, float y, float red, float green, float blue, float alpha) {
+        Vector3f position = matrix.transformPosition(x, y, 0.0f, new Vector3f());
+        bufferBuilder.addVertex(position.x(), position.y(), position.z())
+                .setColor(red, green, blue, alpha);
     }
 }

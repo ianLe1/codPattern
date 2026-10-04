@@ -3,12 +3,13 @@ package com.cdp.codpattern.event.client;
 import com.cdp.codpattern.client.gui.refit.BackpackButton;
 import com.cdp.codpattern.client.gui.refit.ModeRoomButton;
 import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = "codpattern", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "codpattern", value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class CreateMenuButtonsHandler {
 
     @SubscribeEvent

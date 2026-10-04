@@ -5,6 +5,7 @@ import com.cdp.codpattern.client.gui.GuiTextHelper;
 import com.cdp.codpattern.compat.lrtactical.LrTacticalClientApi;
 import com.cdp.codpattern.compat.tacz.client.TaczClientApi;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -225,7 +226,7 @@ public class FlatColorButton extends Button {
             weaponName = null;
             return;
         }
-        if (!lastWeaponSnapshot.isEmpty() && ItemStack.isSameItemSameTags(weapon, lastWeaponSnapshot)) {
+        if (!lastWeaponSnapshot.isEmpty() && ItemStack.isSameItemSameComponents(weapon, lastWeaponSnapshot)) {
             return;
         }
         lastWeaponSnapshot = weapon.copy();

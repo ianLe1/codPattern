@@ -19,19 +19,20 @@ import com.phasetranscrystal.fpsmatch.core.data.save.FPSMDataManager;
 import com.phasetranscrystal.fpsmatch.core.data.save.SaveHolder;
 import com.phasetranscrystal.fpsmatch.core.event.RegisterFPSMSaveDataEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /**
  * TDM 地图数据序列化和保存
  * 数据保存到 <world>/serverconfig/codpattern/maps/builtin/frontline/<地图目录>/map.json
  */
-@Mod.EventBusSubscriber(modid = "codpattern", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "codpattern", bus = EventBusSubscriber.Bus.GAME)
 public class CodTdmMapData {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ModeMapPersistenceProvider PERSISTENCE_PROVIDER = new FrontlinePersistenceProvider();

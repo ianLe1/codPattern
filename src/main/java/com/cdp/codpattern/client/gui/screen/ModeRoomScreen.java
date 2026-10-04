@@ -303,7 +303,7 @@ public class ModeRoomScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
 
         Minecraft mc = Minecraft.getInstance();
         float enterProgress = enterProgress();
@@ -434,27 +434,27 @@ public class ModeRoomScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         int listTop = roomListY;
         if (mouseX >= roomListX
                 && mouseX <= roomListX + roomListWidth
                 && mouseY >= listTop
                 && mouseY < listTop + roomListHeight) {
-            if (delta > 0 && roomListScrollOffset > 0) {
+            if (deltaY > 0 && roomListScrollOffset > 0) {
                 roomListScrollOffset--;
                 return true;
             }
-            if (delta < 0 && roomListScrollOffset < roomListMaxScrollOffset) {
+            if (deltaY < 0 && roomListScrollOffset < roomListMaxScrollOffset) {
                 roomListScrollOffset++;
                 return true;
             }
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics) {
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fillGradient(0, 0, this.width, this.height, CodTheme.BG_TOP, CodTheme.BG_BOTTOM);
     }
 

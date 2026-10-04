@@ -19,14 +19,15 @@ import com.phasetranscrystal.fpsmatch.core.data.save.FPSMDataManager;
 import com.phasetranscrystal.fpsmatch.core.data.save.SaveHolder;
 import com.phasetranscrystal.fpsmatch.core.event.RegisterFPSMSaveDataEvent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.Optional;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = "codpattern", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "codpattern", bus = EventBusSubscriber.Bus.GAME)
 public class CodTacticalTdmMapData {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ModeMapPersistenceProvider PERSISTENCE_PROVIDER = new TacticalTdmPersistenceProvider();

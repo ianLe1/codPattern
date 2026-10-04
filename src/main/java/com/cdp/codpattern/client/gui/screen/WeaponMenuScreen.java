@@ -108,7 +108,7 @@ public class WeaponMenuScreen extends Screen {
     }
 
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
 
         // 渲染标题
@@ -210,7 +210,7 @@ public class WeaponMenuScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics pGuiGraphics) {
+    public void renderBackground(@NotNull GuiGraphics pGuiGraphics, int mouseX, int mouseY, float partialTick) {
         // cod2022风格深色渐变背景
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, CodTheme.BG_TOP, CodTheme.BG_BOTTOM);
     }

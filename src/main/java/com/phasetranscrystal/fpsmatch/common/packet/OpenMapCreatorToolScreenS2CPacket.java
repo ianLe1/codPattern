@@ -5,7 +5,7 @@ import com.phasetranscrystal.fpsmatch.common.item.MapCreatorToolModes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,6 +12,7 @@ import com.cdp.codpattern.core.refit.AttachmentEditSession;
 import com.cdp.codpattern.core.refit.AttachmentEditSessionManager;
 import com.cdp.codpattern.core.refit.AttachmentPresetUtil;
 import com.cdp.codpattern.network.SyncAttachmentPresetPacket;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -187,7 +188,7 @@ public final class AttachmentPresetRequestService {
             ItemStack stack = new ItemStack(item, itemData.getCount());
             String nbt = itemData.getNbt();
             if (nbt != null && !nbt.isEmpty()) {
-                stack.setTag(TagParser.parseTag(nbt));
+                ItemNbt.set(stack, TagParser.parseTag(nbt));
             }
             return stack;
         } catch (Exception e) {

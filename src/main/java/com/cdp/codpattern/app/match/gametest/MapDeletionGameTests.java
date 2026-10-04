@@ -1,5 +1,6 @@
 package com.cdp.codpattern.app.match.gametest;
 
+import net.minecraft.server.network.CommonListenerCookie;
 import com.cdp.codpattern.app.match.management.*;
 import com.cdp.codpattern.app.match.model.RoomId;
 import com.cdp.codpattern.app.match.persistence.ModeMapPersistenceRegistry;
@@ -22,8 +23,8 @@ import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.*;
 
@@ -315,8 +316,9 @@ public final class MapDeletionGameTests {
     }
     public static ServerPlayer player(GameTestHelper helper) {
         var server = helper.getLevel().getServer();
-        var player = new ServerPlayer(server, helper.getLevel(), new GameProfile(UUID.randomUUID(), "del-" + UUID.randomUUID().toString().substring(0, 8)));
-        player.connection = new ServerGamePacketListenerImpl(server, new Connection(PacketFlow.SERVERBOUND), player) {
+        var player = new ServerPlayer(server, helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "del-" + UUID.randomUUID().toString().substring(0, 8)), net.minecraft.server.level.ClientInformation.createDefault());
+        player.connection = new ServerGamePacketListenerImpl(server, new Connection(PacketFlow.SERVERBOUND), player, CommonListenerCookie.createInitial(player.getGameProfile(), false)) {
             @Override public void send(Packet<?> packet) { }
             @Override public void send(Packet<?> packet, PacketSendListener listener) { }
             @Override public void teleport(double x, double y, double z, float yaw, float pitch) { player.moveTo(x,y,z,yaw,pitch); }

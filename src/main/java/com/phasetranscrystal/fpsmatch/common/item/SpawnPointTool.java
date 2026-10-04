@@ -26,11 +26,14 @@ import com.phasetranscrystal.fpsmatch.core.map.BaseTeam;
 import com.phasetranscrystal.fpsmatch.util.PreviewColorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -533,24 +536,30 @@ public class SpawnPointTool extends CreatorToolItem implements WorldToolItem {
     }
 
     private static void setBlockPos(ItemStack stack, String tag, BlockPos pos) {
-        CompoundTag compoundTag = stack.getOrCreateTag();
-        if (pos == null) {
-            compoundTag.remove(tag);
-            return;
-        }
-        compoundTag.putLong(tag, pos.asLong());
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, compoundTag -> {
+            if (pos == null) {
+                compoundTag.remove(tag);
+                return;
+            }
+            compoundTag.putLong(tag, pos.asLong());
+        });
     }
 
     private static BlockPos getBlockPos(ItemStack stack, String tag) {
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag == null || !compoundTag.contains(tag, Tag.TAG_LONG)) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) {
+            return null;
+        }
+        CompoundTag compoundTag = data.copyTag();
+        if (!compoundTag.contains(tag, Tag.TAG_LONG)) {
             return null;
         }
         return BlockPos.of(compoundTag.getLong(tag));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext level, List<Component> tooltip,
+            TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltip, isAdvanced);
         tooltip.add(TdmToolText.applicableModesTooltip());
         tooltip.add(Component.translatable("tooltip.fpsm.separator").withStyle(ChatFormatting.GOLD));

@@ -6,7 +6,7 @@ import com.cdp.codpattern.config.backpack.BackpackConfigRepository;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 import com.cdp.codpattern.adapter.forge.network.ModNetworkChannel;
 
 import java.nio.file.Path;

@@ -8,11 +8,12 @@ import com.cdp.codpattern.compat.fpsmatch.FpsMatchGatewayProvider;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CodPatternConstants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CodPatternConstants.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public final class ModeObjectInteractionEventHandler {
     private ModeObjectInteractionEventHandler() {
     }
@@ -80,11 +81,24 @@ public final class ModeObjectInteractionEventHandler {
                 event.getLevel().getBlockState(event.getPos()));
     }
 
-    private static void applyResult(PlayerInteractEvent event, InteractionResult result) {
+    private static void applyResult(PlayerInteractEvent.RightClickBlock event, InteractionResult result) {
+        apply(event, result, event::setCancellationResult);
+    }
+
+    private static void applyResult(PlayerInteractEvent.RightClickItem event, InteractionResult result) {
+        apply(event, result, event::setCancellationResult);
+    }
+
+    private static void applyResult(PlayerInteractEvent.EntityInteract event, InteractionResult result) {
+        apply(event, result, event::setCancellationResult);
+    }
+
+    private static void apply(net.neoforged.bus.api.ICancellableEvent event, InteractionResult result,
+                              java.util.function.Consumer<InteractionResult> cancellationResult) {
         if (result == null || result == InteractionResult.PASS) {
             return;
         }
-        event.setCancellationResult(result);
+        cancellationResult.accept(result);
         event.setCanceled(true);
     }
 }

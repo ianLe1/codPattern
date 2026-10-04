@@ -6,7 +6,7 @@ import com.cdp.codpattern.network.SyncAttachmentCandidatesPacket;
 import com.tacz.guns.network.message.ClientMessageUnloadAttachment;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = ClientMessageUnloadAttachment.class, remap = false, priority = 900)
 public abstract class ClientMessageUnloadAttachmentMixin {
     @Redirect(
-            method = "lambda$handle$0",
+            method = "lambda$handle$2",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/level/ServerPlayer;getInventory()Lnet/minecraft/world/entity/player/Inventory;"
@@ -28,24 +28,23 @@ public abstract class ClientMessageUnloadAttachmentMixin {
         return refitInventory == null ? player.getInventory() : refitInventory;
     }
 
-    @ModifyVariable(method = "lambda$handle$0", at = @At("STORE"), ordinal = 0)
+    @ModifyVariable(method = "lambda$handle$2", at = @At("STORE"), ordinal = 0)
     private static Inventory codpattern$keepRefitInventoryVariable(Inventory inventory) {
         return codpattern$preferBackpackRefitInventory(inventory);
     }
 
     @Inject(
-            method = "lambda$handle$0",
+            method = "lambda$handle$2",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/tacz/guns/network/NetworkHandler;sendToClientPlayer(Ljava/lang/Object;Lnet/minecraft/world/entity/player/Player;)V",
+                    target = "Lcom/tacz/guns/network/NetworkHandler;sendToClientPlayer(Lnet/minecraft/network/protocol/common/custom/CustomPacketPayload;Lnet/minecraft/world/entity/player/Player;)V",
                     shift = At.Shift.BEFORE
             )
     )
-    private static void codpattern$syncCandidatesBeforeRefresh(NetworkEvent.Context context,
+    private static void codpattern$syncCandidatesBeforeRefresh(IPayloadContext context,
             ClientMessageUnloadAttachment message,
             CallbackInfo ci) {
-        ServerPlayer player = context.getSender();
-        if (player == null) {
+        if (!(context.player() instanceof ServerPlayer player)) {
             return;
         }
         if (AttachmentEditSessionManager.getSession(player.getUUID()) == null) {

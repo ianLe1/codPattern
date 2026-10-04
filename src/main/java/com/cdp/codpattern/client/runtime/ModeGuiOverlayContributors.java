@@ -1,7 +1,7 @@
 package com.cdp.codpattern.client.runtime;
 
 import com.cdp.codpattern.client.extension.ModeGuiOverlayContributor;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +25,7 @@ public final class ModeGuiOverlayContributors {
                 .thenComparing(ModeGuiOverlayContributor::id));
     }
 
-    public static synchronized void registerAll(RegisterGuiOverlaysEvent event) {
+    public static synchronized void registerAll(RegisterGuiLayersEvent event) {
         CONTRIBUTORS.forEach(contributor -> contributor.register(event));
     }
 }

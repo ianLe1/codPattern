@@ -14,15 +14,16 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.Map;
 import java.util.UUID;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public final class TdmCombatMarkerWorldRenderer {
     private static final double MIN_RENDER_DEPTH = 0.05D;
 
@@ -98,7 +99,7 @@ public final class TdmCombatMarkerWorldRenderer {
                     continue;
                 }
 
-                Vec3 anchor = interpolatePlayerHeadPos(tracked, event.getPartialTick());
+                Vec3 anchor = interpolatePlayerHeadPos(tracked, event.getPartialTick().getGameTimeDeltaPartialTick(false));
                 Vec3 relative = anchor.subtract(cameraPos);
                 double depth = relative.dot(cameraForward);
                 if (depth <= MIN_RENDER_DEPTH) {

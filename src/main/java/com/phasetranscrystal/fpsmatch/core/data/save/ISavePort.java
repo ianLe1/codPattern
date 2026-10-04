@@ -24,17 +24,13 @@ public interface ISavePort<T> {
 
     default T decodeFromJson(JsonElement json) {
         return codec().decode(JsonOps.INSTANCE, json)
-                .getOrThrow(false, error -> {
-                    throw new RuntimeException(error);
-                })
+                .getOrThrow(error -> new RuntimeException(error))
                 .getFirst();
     }
 
     default JsonElement encodeToJson(T data) {
         return codec().encodeStart(JsonOps.INSTANCE, data)
-                .getOrThrow(false, error -> {
-                    throw new RuntimeException(error);
-                });
+                .getOrThrow(error -> new RuntimeException(error));
     }
 
     default T readSpecificFile(File directory, String fileName) {

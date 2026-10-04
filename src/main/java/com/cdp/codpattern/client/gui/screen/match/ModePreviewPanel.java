@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public final class ModePreviewPanel {
     private static final PreviewTexture SHARED_PREVIEW = new PreviewTexture(
-            new ResourceLocation("codpattern", "textures/gui/modes/shared_preview.png"),
+            ResourceLocation.fromNamespaceAndPath("codpattern", "textures/gui/modes/shared_preview.png"),
             3840,
             2160);
     private static final float MODE_OVERLAY_ALPHA_FACTOR = 0.40f;

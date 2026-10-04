@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public final class FPSMCreativeModeTabRegister {
     public static final ResourceKey<CreativeModeTab> CODPATTERN_TOOLS_AND_ITEMS_KEY = ResourceKey.create(
@@ -22,7 +22,7 @@ public final class FPSMCreativeModeTabRegister {
             FPSMatch.MODID
     );
 
-    public static final RegistryObject<CreativeModeTab> CODPATTERN_TOOLS_AND_ITEMS = CREATIVE_MODE_TABS.register(
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CODPATTERN_TOOLS_AND_ITEMS = CREATIVE_MODE_TABS.register(
             "tools_and_items",
             () -> CreativeModeTab.builder()
                     .withTabsBefore(CreativeModeTabs.TOOLS_AND_UTILITIES)

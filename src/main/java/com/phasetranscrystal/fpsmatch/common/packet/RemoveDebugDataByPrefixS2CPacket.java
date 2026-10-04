@@ -2,7 +2,7 @@ package com.phasetranscrystal.fpsmatch.common.packet;
 
 import com.phasetranscrystal.fpsmatch.common.client.FPSMClient;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

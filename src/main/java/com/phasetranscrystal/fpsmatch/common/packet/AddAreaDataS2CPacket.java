@@ -3,10 +3,11 @@ package com.phasetranscrystal.fpsmatch.common.packet;
 import com.phasetranscrystal.fpsmatch.common.client.FPSMClient;
 import com.phasetranscrystal.fpsmatch.common.client.data.RenderableArea;
 import com.phasetranscrystal.fpsmatch.core.data.AreaData;
+import com.cdp.codpattern.adapter.neoforge.network.PayloadBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,7 +26,7 @@ public class AddAreaDataS2CPacket {
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(key);
-        buf.writeComponent(name);
+        PayloadBuf.writeComponent(buf, name);
         buf.writeInt(color);
         buf.writeBlockPos(areaData.pos1());
         buf.writeBlockPos(areaData.pos2());
@@ -33,7 +34,7 @@ public class AddAreaDataS2CPacket {
 
     public static AddAreaDataS2CPacket decode(FriendlyByteBuf buf) {
         String key = buf.readUtf();
-        Component name = buf.readComponent();
+        Component name = PayloadBuf.readComponent(buf);
         int color = buf.readInt();
         BlockPos pos1 = buf.readBlockPos();
         BlockPos pos2 = buf.readBlockPos();

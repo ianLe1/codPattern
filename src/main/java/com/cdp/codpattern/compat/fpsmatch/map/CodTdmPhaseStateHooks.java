@@ -148,7 +148,7 @@ final class CodTdmPhaseStateHooks implements PhaseStateMachine.Hooks {
             player.connection.send(animationPacket);
             player.connection.send(titlePacket);
             player.connection.send(subtitlePacket);
-            player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING.get(), SoundSource.PLAYERS, 0.9f, 1.0f);
+            player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING.value(), SoundSource.PLAYERS, 0.9f, 1.0f);
         }
     }
 

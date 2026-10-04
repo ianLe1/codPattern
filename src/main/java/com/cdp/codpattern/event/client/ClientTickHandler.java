@@ -3,23 +3,23 @@ package com.cdp.codpattern.event.client;
 import com.cdp.codpattern.CodPatternConstants;
 import com.cdp.codpattern.client.ClientTdmState;
 import com.cdp.codpattern.client.TdmCombatMarkerTracker;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CodPatternConstants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class ClientTickHandler {
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            ClientTdmState.enforceDeathCamViewLock();
-            return;
-        }
-        if (event.phase == TickEvent.Phase.END) {
-            ClientTdmState.clientTick();
-            TdmCombatMarkerTracker.INSTANCE.clientTick();
-        }
+    public static void onClientTickPre(ClientTickEvent.Pre event) {
+        ClientTdmState.enforceDeathCamViewLock();
+    }
+
+    @SubscribeEvent
+    public static void onClientTickPost(ClientTickEvent.Post event) {
+        ClientTdmState.clientTick();
+        TdmCombatMarkerTracker.INSTANCE.clientTick();
     }
 }

@@ -1,11 +1,11 @@
 package com.cdp.codpattern.core.throwable;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
-@AutoRegisterCapability
-public class ThrowableInventoryState {
+public class ThrowableInventoryState implements INBTSerializable<CompoundTag> {
     public static final int SLOT_COUNT = 2;
     public static final int ACTIVE_SLOT_NONE = -1;
 
@@ -58,21 +58,25 @@ public class ThrowableInventoryState {
         return stacks;
     }
 
-    public CompoundTag serializeNBT() {
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         for (int i = 0; i < SLOT_COUNT; i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
-                tag.put("slot_" + i, stack.save(new CompoundTag()));
+                tag.put("slot_" + i, stack.save(registries));
             }
         }
         return tag;
     }
 
-    public void deserializeNBT(CompoundTag tag) {
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
         for (int i = 0; i < SLOT_COUNT; i++) {
             String key = "slot_" + i;
-            ItemStack stack = tag.contains(key) ? ItemStack.of(tag.getCompound(key)) : ItemStack.EMPTY;
+            ItemStack stack = tag.contains(key)
+                    ? ItemStack.parseOptional(registries, tag.getCompound(key))
+                    : ItemStack.EMPTY;
             container.replaceItem(i, stack);
         }
         activeSlot = ACTIVE_SLOT_NONE;

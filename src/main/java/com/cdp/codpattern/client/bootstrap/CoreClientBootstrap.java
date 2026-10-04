@@ -1,11 +1,13 @@
 package com.cdp.codpattern.client.bootstrap;
 
+import com.cdp.codpattern.CodPatternConstants;
 import com.cdp.codpattern.client.extension.ModeGuiOverlayContributor;
 import com.cdp.codpattern.client.extension.ModeHudReplacementPolicy;
 import com.cdp.codpattern.client.gui.overlay.TdmHudOverlay;
 import com.cdp.codpattern.client.runtime.ModeGuiOverlayContributors;
 import com.cdp.codpattern.client.runtime.ModeHudReplacementPolicies;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -32,8 +34,10 @@ public final class CoreClientBootstrap {
             }
 
             @Override
-            public void register(RegisterGuiOverlaysEvent event) {
-                event.registerAboveAll("tdm_hud", TdmHudOverlay.INSTANCE);
+            public void register(RegisterGuiLayersEvent event) {
+                event.registerAboveAll(
+                        ResourceLocation.fromNamespaceAndPath(CodPatternConstants.MOD_ID, "tdm_hud"),
+                        TdmHudOverlay.INSTANCE);
             }
         });
         ModeHudReplacementPolicies.register(new ModeHudReplacementPolicy() {

@@ -20,8 +20,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.UUID;
 
@@ -220,11 +220,11 @@ public final class MapManagementGameTests {
         core.registerMap("frontline", map);
         ModeMapPersistenceRegistry.find("frontline").orElseThrow().save(map, core.getFPSMDataManager());
         var denied = new net.minecraft.server.level.ServerPlayer(server, helper.getLevel(),
-                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "map-reader")) {
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "map-reader"), net.minecraft.server.level.ClientInformation.createDefault()) {
             @Override public boolean hasPermissions(int permission) { return false; }
         };
         var administrator = new net.minecraft.server.level.ServerPlayer(server, helper.getLevel(),
-                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "map-admin")) {
+                new com.mojang.authlib.GameProfile(UUID.randomUUID(), "map-admin"), net.minecraft.server.level.ClientInformation.createDefault()) {
             @Override public boolean hasPermissions(int permission) { return permission <= 2; }
             @Override public net.minecraft.commands.CommandSourceStack createCommandSourceStack() {
                 return super.createCommandSourceStack().withPermission(2);

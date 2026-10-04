@@ -6,7 +6,7 @@ import com.cdp.codpattern.network.SyncAttachmentCandidatesPacket;
 import com.cdp.codpattern.network.SyncAttachmentPresetPacket;
 import com.cdp.codpattern.network.UpdateWeaponPacket;
 import com.cdp.codpattern.network.UpdateWeaponResultPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class RefitPacketRegistrar {
     private RefitPacketRegistrar() {

@@ -17,7 +17,7 @@ import java.util.List;
 /** Built-in Frontline and Team Deathmatch module. */
 public final class TdmModeModule implements ModeModule {
     public static final TdmModeModule INSTANCE = new TdmModeModule();
-    private static final ResourceLocation ID = new ResourceLocation("codpattern", "team_modes");
+    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("codpattern", "team_modes");
     private static final List<ModePlayerLoginContributor> LOGIN_CONTRIBUTORS =
             List.of(new CodTdmLoginRecoveryContributor());
     private static final List<ModeHeldToolPreviewContributor> TOOL_PREVIEWS = List.of(

@@ -11,6 +11,7 @@ import com.cdp.codpattern.config.backpack.BackpackConfig;
 import com.cdp.codpattern.config.weaponfilter.WeaponFilterClientCache;
 import com.cdp.codpattern.config.weaponfilter.WeaponFilterConfig;
 import com.cdp.codpattern.network.UpdateWeaponPacket;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -336,7 +337,7 @@ public class WeaponScreen extends Screen {
     private void onWeaponSelected(ItemStack weapon) {
         String key = slotType;
         String itemId = weapon.getItem().builtInRegistryHolder().key().location().toString();
-        String nbt = weapon.hasTag() ? weapon.getTag().toString() : "";
+        String nbt = ItemNbt.has(weapon) ? ItemNbt.get(weapon).toString() : "";
 
         BackpackConfig.Backpack.ItemData itemData = new BackpackConfig.Backpack.ItemData(itemId, 1, nbt);
         backpack.getItem_MAP().put(key, itemData);
@@ -356,7 +357,7 @@ public class WeaponScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
 
         Component title = switch (slotType) {
@@ -405,7 +406,7 @@ public class WeaponScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics graphics) {
+    public void renderBackground(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fillGradient(0, 0, this.width, this.height, 0x90202020, 0xC0000000);
     }
 
@@ -419,10 +420,10 @@ public class WeaponScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (delta > 0) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
+        if (deltaY > 0) {
             scrollLeft();
-        } else if (delta < 0) {
+        } else if (deltaY < 0) {
             scrollRight();
         }
         return true;

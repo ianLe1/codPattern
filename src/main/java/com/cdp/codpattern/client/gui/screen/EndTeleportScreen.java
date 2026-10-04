@@ -194,7 +194,6 @@ public final class EndTeleportScreen extends Screen {
     }
 
     @Override public void tick() {
-        x.tick(); y.tick(); z.tick();
         if (pending >= 0 && System.currentTimeMillis() - started > 15_000) {
             pending = -1; status = "timeout"; updateButtons();
         }

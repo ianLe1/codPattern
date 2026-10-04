@@ -2,10 +2,11 @@ package com.phasetranscrystal.fpsmatch.common.packet;
 
 import com.phasetranscrystal.fpsmatch.common.client.FPSMClient;
 import com.phasetranscrystal.fpsmatch.common.client.data.RenderablePoint;
+import com.cdp.codpattern.adapter.neoforge.network.PayloadBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -30,7 +31,7 @@ public class AddPointDataS2CPacket {
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeUtf(key);
-        buf.writeComponent(name);
+        PayloadBuf.writeComponent(buf, name);
         buf.writeInt(color);
         buf.writeDouble(position.x);
         buf.writeDouble(position.y);
@@ -43,7 +44,7 @@ public class AddPointDataS2CPacket {
 
     public static AddPointDataS2CPacket decode(FriendlyByteBuf buf) {
         String key = buf.readUtf();
-        Component name = buf.readComponent();
+        Component name = PayloadBuf.readComponent(buf);
         int color = buf.readInt();
         Vec3 position = new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble());
         float yaw = buf.readBoolean() ? buf.readFloat() : Float.NaN;

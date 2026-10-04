@@ -31,9 +31,12 @@ final class TdmPlayerModelRenderer {
 
         InventoryScreen.renderEntityInInventoryFollowsMouse(
                 graphics,
-                centerX,
-                baselineY,
+                centerX - modelScale,
+                baselineY - modelScale,
+                centerX + modelScale,
+                baselineY + modelScale,
                 modelScale,
+                0.0625f,
                 motionX,
                 motionY,
                 entity

@@ -1,9 +1,10 @@
 package com.cdp.codpattern.network;
 
 import com.cdp.codpattern.network.handler.ClientPacketBridge;
+import com.cdp.codpattern.adapter.neoforge.network.PayloadBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class SyncAttachmentCandidatesPacket {
         buffer.writeUtf(packet.slot);
         buffer.writeVarInt(packet.attachmentCandidates.size());
         for (ItemStack stack : packet.attachmentCandidates) {
-            buffer.writeItem(stack == null ? ItemStack.EMPTY : stack);
+            PayloadBuf.writeItem(buffer, stack == null ? ItemStack.EMPTY : stack);
         }
     }
 
@@ -35,7 +36,7 @@ public class SyncAttachmentCandidatesPacket {
         int size = buffer.readVarInt();
         List<ItemStack> attachmentCandidates = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            attachmentCandidates.add(buffer.readItem());
+            attachmentCandidates.add(PayloadBuf.readItem(buffer));
         }
         return new SyncAttachmentCandidatesPacket(bagId, slot, attachmentCandidates);
     }

@@ -1,5 +1,6 @@
 package com.cdp.codpattern.compat.tacz;
 
+import com.cdp.codpattern.adapter.neoforge.registry.RegistryAccessHolder;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAttachment;
@@ -104,14 +105,10 @@ public final class TaczCoreGateway implements TaczGateway {
                 continue;
             }
             String key = GunItemDataAccessor.GUN_ATTACHMENT_BASE + type.name();
-            ItemStack attachment = iGun.getAttachment(gunStack, type);
-            CompoundTag attachmentTag = new CompoundTag();
-            if (attachment.isEmpty()) {
-                ItemStack.EMPTY.save(attachmentTag);
-            } else {
-                attachment.save(attachmentTag);
-            }
-            preset.put(key, attachmentTag);
+            ItemStack attachment = iGun.getAttachment(RegistryAccessHolder.get(), gunStack, type);
+            preset.put(key, attachment.isEmpty()
+                    ? ItemStack.EMPTY.save(RegistryAccessHolder.get())
+                    : attachment.save(RegistryAccessHolder.get()));
         }
         if (iGun.hasCustomLaserColor(gunStack)) {
             preset.putInt(GunItemDataAccessor.LASER_COLOR_TAG, iGun.getLaserColor(gunStack));
@@ -138,11 +135,11 @@ public final class TaczCoreGateway implements TaczGateway {
             if (!preset.contains(key, Tag.TAG_COMPOUND)) {
                 continue;
             }
-            ItemStack attachment = ItemStack.of(preset.getCompound(key));
+            ItemStack attachment = ItemStack.parseOptional(RegistryAccessHolder.get(), preset.getCompound(key));
             if (attachment.isEmpty()) {
-                iGun.unloadAttachment(gunStack, type);
+                iGun.unloadAttachment(RegistryAccessHolder.get(), gunStack, type);
             } else if (iGun.allowAttachment(gunStack, attachment)) {
-                iGun.installAttachment(gunStack, attachment);
+                iGun.installAttachment(RegistryAccessHolder.get(), gunStack, attachment);
             }
         }
         if (preset.contains(GunItemDataAccessor.LASER_COLOR_TAG, Tag.TAG_INT)) {

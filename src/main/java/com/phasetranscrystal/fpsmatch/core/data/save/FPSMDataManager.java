@@ -5,12 +5,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.cdp.codpattern.config.storage.*;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.io.File;
 import java.nio.file.Files;

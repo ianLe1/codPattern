@@ -1,10 +1,11 @@
 package com.cdp.codpattern.app.match.runtime.termination;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
@@ -20,13 +21,13 @@ final class PlayerRecoveryPersistence {
         Path temporary = Files.createTempFile(directory, player.getStringUUID() + "-recovery-", ".dat");
         try {
             CompoundTag snapshot = player.saveWithoutId(new CompoundTag());
-            NbtIo.writeCompressed(snapshot, temporary.toFile());
+            NbtIo.writeCompressed(snapshot, temporary);
             try (var channel = FileChannel.open(temporary, StandardOpenOption.WRITE)) { channel.force(true); }
             if (Files.exists(target)) Files.copy(target, directory.resolve(player.getStringUUID() + ".dat_old"), StandardCopyOption.REPLACE_EXISTING);
             try { Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING); }
             catch (AtomicMoveNotSupportedException ignored) { Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING); }
-            if (!snapshot.equals(NbtIo.readCompressed(target.toFile()))) throw new IOException("Player recovery save verification failed");
-            ForgeEventFactory.firePlayerSavingEvent(player, directory.toFile(), player.getStringUUID());
+            if (!snapshot.equals(NbtIo.readCompressed(target, NbtAccounter.unlimitedHeap()))) throw new IOException("Player recovery save verification failed");
+            EventHooks.firePlayerSavingEvent(player, directory.toFile(), player.getStringUUID());
         } finally { Files.deleteIfExists(temporary); }
     }
 }

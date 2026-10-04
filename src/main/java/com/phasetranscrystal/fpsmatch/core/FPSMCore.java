@@ -11,14 +11,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = "codpattern", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "codpattern", bus = EventBusSubscriber.Bus.GAME)
 public class FPSMCore {
     private static FPSMCore INSTANCE;
 
@@ -238,8 +239,8 @@ public class FPSMCore {
     @SubscribeEvent
     public static void onServerStartedEvent(ServerStartedEvent event) {
         INSTANCE = new FPSMCore(event.getServer());
-        MinecraftForge.EVENT_BUS.post((Event) new RegisterFPSMapEvent(INSTANCE));
-        MinecraftForge.EVENT_BUS.post((Event) new RegisterFPSMSaveDataEvent(INSTANCE.fpsmDataManager));
+        NeoForge.EVENT_BUS.post((Event) new RegisterFPSMapEvent(INSTANCE));
+        NeoForge.EVENT_BUS.post((Event) new RegisterFPSMSaveDataEvent(INSTANCE.fpsmDataManager));
         new com.cdp.codpattern.app.match.management.MapManagementJournal(
                 event.getServer(), com.cdp.codpattern.config.storage.ServerMapStorage.get(event.getServer()))
                 .recoverAll();
@@ -248,8 +249,8 @@ public class FPSMCore {
     }
 
     @SubscribeEvent
-    public static void onServerTickEvent(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && initialized()) {
+    public static void onServerTickEvent(ServerTickEvent.Post event) {
+        if (initialized()) {
             getInstance().onServerTick();
         }
     }

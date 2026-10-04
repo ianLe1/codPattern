@@ -13,7 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.util.*;
 
 /** Server-owned termination authority. Modes supply data; shared cleanup executes independently. */
@@ -244,8 +244,8 @@ public final class RoomTerminationService {
     }
     public void registerAttribute(ServerPlayer player, String attribute, net.minecraft.world.entity.ai.attributes.AttributeModifier modifier) {
         var record = requireRecord(player);
-        var undo = new PlayerRecoveryRecord.AttributeUndo(attribute, modifier.getName(), modifier.getAmount(), modifier.getOperation().toValue());
-        if (!Objects.equals(record.attributes.put(modifier.getId().toString(), undo), undo)) checkpoint();
+        var undo = new PlayerRecoveryRecord.AttributeUndo(attribute, modifier.id().toString(), modifier.amount(), modifier.operation().id());
+        if (!Objects.equals(record.attributes.put(modifier.id().toString(), undo), undo)) checkpoint();
     }
     public void registerPersistentTag(ServerPlayer player, String key) {
         var record = requireRecord(player);

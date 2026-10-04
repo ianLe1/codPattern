@@ -9,7 +9,7 @@ import com.cdp.codpattern.app.match.runtime.termination.RoomTerminationService;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;

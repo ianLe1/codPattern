@@ -9,7 +9,7 @@ import com.cdp.codpattern.network.match.ModeObjectStateSyncPacket;
 import com.cdp.codpattern.network.match.ModeRuntimeStatePacket;
 import com.cdp.codpattern.network.match.PhysicsMobRetainPacket;
 import com.cdp.codpattern.network.match.ScoreUpdatePacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class ModeRuntimePacketRegistrar {
     private ModeRuntimePacketRegistrar() {

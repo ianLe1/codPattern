@@ -158,7 +158,6 @@ public final class MapManagementScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        if (nameField != null) nameField.tick();
         if (pendingAction >= 0 && System.currentTimeMillis() - pendingStartedAt > 15_000L) {
             if (pendingDeleteRequest != null) {
                 pendingStartedAt = System.currentTimeMillis();
@@ -379,16 +378,16 @@ public final class MapManagementScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         if (mouseX >= leftX && mouseX < leftX + leftWidth && mouseY >= PANEL_TOP) {
-            listScroll = Math.max(0, listScroll - (delta > 0 ? 1 : -1));
+            listScroll = Math.max(0, listScroll - (deltaY > 0 ? 1 : -1));
             return true;
         }
         if (mouseX >= rightX && mouseX < rightX + rightWidth && mouseY >= PANEL_TOP) {
-            detailScroll = Math.max(0, detailScroll - (delta > 0 ? 1 : -1));
+            detailScroll = Math.max(0, detailScroll - (deltaY > 0 ? 1 : -1));
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     @Override

@@ -99,12 +99,6 @@ public class MapCreatorToolScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        if (this.mapNameField != null) {
-            this.mapNameField.tick();
-        }
-        for (EditBox field : getPosFields()) {
-            field.tick();
-        }
     }
 
     @Override
@@ -308,7 +302,7 @@ public class MapCreatorToolScreen extends Screen {
         Camera camera = minecraft.gameRenderer.getMainCamera();
         Vec3 eyePosition = camera.getPosition();
         Vec3 direction = getRayDirection(camera, mouseX, mouseY);
-        double reach = minecraft.player.getBlockReach();
+        double reach = minecraft.player.blockInteractionRange();
         BlockHitResult hitResult = minecraft.level.clip(new ClipContext(
                 eyePosition,
                 eyePosition.add(direction.scale(reach)),

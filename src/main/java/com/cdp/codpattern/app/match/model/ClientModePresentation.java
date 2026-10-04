@@ -29,7 +29,7 @@ public record ClientModePresentation(
         this(
                 previewTexturePath == null || previewTexturePath.isBlank()
                         ? null
-                        : new ResourceLocation("codpattern", previewTexturePath),
+                        : ResourceLocation.fromNamespaceAndPath("codpattern", previewTexturePath),
                 textureWidth,
                 textureHeight,
                 accentColor,

@@ -69,22 +69,15 @@ public class RenameBackpackScreen extends Screen {
         addRenderableWidget(confirmButton);
         addRenderableWidget(cancelButton);
 
-        nameBox.moveCursorToEnd();
+        nameBox.moveCursorToEnd(true);
         nameBox.setFocused(true);
         this.setInitialFocus(nameBox);
         this.setFocused(nameBox);
     }
 
     @Override
-    public void tick() {
-        if (nameBox != null) {
-            nameBox.tick();
-        }
-    }
-
-    @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTick);
         super.render(graphics, mouseX, mouseY, partialTick);
         GuiTextHelper.drawReferenceCenteredString(
                 graphics,

@@ -20,7 +20,7 @@ import com.cdp.codpattern.network.match.VoteDialogPacket;
 import com.cdp.codpattern.network.match.VoteEndPacket;
 import com.cdp.codpattern.network.match.VoteResponsePacket;
 import com.cdp.codpattern.network.match.VoteStartPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class ModeRoomPacketRegistrar {
     private ModeRoomPacketRegistrar() {

@@ -1,7 +1,7 @@
 package com.cdp.codpattern.compat.lrtactical;
 
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.slf4j.Logger;
 
 public final class LrTacticalGatewayProvider {

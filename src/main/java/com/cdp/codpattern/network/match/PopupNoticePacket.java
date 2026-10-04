@@ -1,9 +1,10 @@
 package com.cdp.codpattern.network.match;
 
 import com.cdp.codpattern.network.handler.ClientPacketBridge;
+import com.cdp.codpattern.adapter.neoforge.network.PayloadBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -17,13 +18,13 @@ public class PopupNoticePacket {
     }
 
     public PopupNoticePacket(FriendlyByteBuf buf) {
-        this.title = buf.readComponent();
-        this.message = buf.readComponent();
+        this.title = PayloadBuf.readComponent(buf);
+        this.message = PayloadBuf.readComponent(buf);
     }
 
     public void encode(FriendlyByteBuf buf) {
-        buf.writeComponent(title);
-        buf.writeComponent(message);
+        PayloadBuf.writeComponent(buf, title);
+        PayloadBuf.writeComponent(buf, message);
     }
 
     public static PopupNoticePacket decode(FriendlyByteBuf buf) {

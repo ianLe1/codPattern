@@ -19,25 +19,26 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
 
 import java.util.Optional;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /**
  * COD TDM 事件处理器
  * 处理游戏类型注册、击杀事件、伤害事件等
  */
-@Mod.EventBusSubscriber(modid = "codpattern", bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = "codpattern", bus = EventBusSubscriber.Bus.GAME)
 public class CodTdmEventHandler {
 
     /**
@@ -45,7 +46,7 @@ public class CodTdmEventHandler {
      * 用于实现热身期间伤害归零（保留击退）和无敌状态
      */
     @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
+    public static void onLivingHurt(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             handlePlayerHurt(event, player);
             return;
@@ -112,7 +113,7 @@ public class CodTdmEventHandler {
         event.setCanceled(true);
     }
 
-    private static void handlePlayerHurt(LivingHurtEvent event, ServerPlayer player) {
+    private static void handlePlayerHurt(LivingIncomingDamageEvent event, ServerPlayer player) {
         Optional<ModeCombatEventPort> combatPortOptional = FpsMatchGatewayProvider.gateway()
                 .findPlayerCombatEventPort(player);
         if (combatPortOptional.isEmpty()) {
@@ -127,7 +128,7 @@ public class CodTdmEventHandler {
         applyDamageDecision(event, decision);
     }
 
-    private static void applyDamageDecision(LivingHurtEvent event, DamageDecision decision) {
+    private static void applyDamageDecision(LivingIncomingDamageEvent event, DamageDecision decision) {
         if (decision == null) {
             return;
         }
@@ -238,7 +239,7 @@ public class CodTdmEventHandler {
         gateway.findRoomEntityCombatEventPort(roomId.get())
                 .ifPresent(port -> port.onEntityDeath(creeper, new EntityDeathContext(
                         roomId.get(),
-                        event.getExplosion().getDamageSource(),
+                        net.minecraft.world.level.Explosion.getDefaultDamageSource(event.getLevel(), creeper),
                         creeper,
                         Optional.empty())));
     }
@@ -287,7 +288,7 @@ public class CodTdmEventHandler {
         return null;
     }
 
-    private static ServerPlayer resolveAttacker(LivingHurtEvent event) {
+    private static ServerPlayer resolveAttacker(LivingIncomingDamageEvent event) {
         Entity sourceEntity = event.getSource().getEntity();
         ServerPlayer attacker = asServerPlayer(sourceEntity);
         if (attacker != null) {

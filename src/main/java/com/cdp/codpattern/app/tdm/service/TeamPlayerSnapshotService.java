@@ -45,7 +45,7 @@ public final class TeamPlayerSnapshotService {
                             serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE
                                     && !respawningPlayers.contains(playerId),
                             invinciblePlayers.contains(playerId),
-                            Math.max(0, serverPlayer.latency)
+                            Math.max(0, serverPlayer.connection.latency())
                     );
                     playerInfos.add(info);
                 }

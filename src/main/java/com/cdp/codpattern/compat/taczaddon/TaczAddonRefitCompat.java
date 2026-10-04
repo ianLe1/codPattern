@@ -4,12 +4,13 @@ import com.mojang.logging.LogUtils;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.item.AttachmentItem;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -42,14 +43,12 @@ public final class TaczAddonRefitCompat {
         if (!isLoaded()) {
             return;
         }
-        CompoundTag tag = gunStack.getTag();
+        CompoundTag tag = ItemNbt.get(gunStack);
         if (tag == null || !tag.contains(COMBINED_ITEMS_TAG, Tag.TAG_LIST)) {
             return;
         }
         tag.remove(COMBINED_ITEMS_TAG);
-        if (tag.isEmpty()) {
-            gunStack.setTag(null);
-        }
+        ItemNbt.set(gunStack, tag.isEmpty() ? null : tag);
     }
 
     public static List<ItemStack> resolveBackpackRefitCandidates(Player player, ItemStack originalGunStack) {

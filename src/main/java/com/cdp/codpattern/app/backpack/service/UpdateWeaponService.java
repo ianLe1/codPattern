@@ -7,6 +7,7 @@ import com.cdp.codpattern.config.weaponfilter.WeaponFilterConfig;
 import com.cdp.codpattern.config.weaponfilter.WeaponFilterConfigRepository;
 import com.cdp.codpattern.compat.lrtactical.LrTacticalGatewayProvider;
 import com.cdp.codpattern.compat.tacz.TaczGatewayProvider;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -146,7 +147,7 @@ public final class UpdateWeaponService {
 
         ItemStack candidateStack = new ItemStack(item, 1);
         if (nbtTag != null && !nbtTag.isEmpty()) {
-            candidateStack.setTag(nbtTag.copy());
+            ItemNbt.set(candidateStack, nbtTag.copy());
         }
         if (BackpackNamespaceFilter.isBlocked(filterConfig, candidateStack, itemResourceLocation)) {
             return ValidationResult.fail("ITEM_BLOCKED", "");

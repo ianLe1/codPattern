@@ -2,6 +2,7 @@ package com.cdp.codpattern.config.backpack;
 
 import com.cdp.codpattern.compat.tacz.TaczGatewayProvider;
 import com.cdp.codpattern.core.refit.AttachmentPresetUtil;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -32,7 +33,7 @@ public final class BackpackItemStackFactory {
             ItemStack stack = new ItemStack(item, Math.max(1, itemData.getCount()));
             String nbt = itemData.getNbt();
             if (nbt != null && !nbt.isBlank()) {
-                stack.setTag(TagParser.parseTag(nbt));
+                ItemNbt.set(stack, TagParser.parseTag(nbt));
             }
 
             String attachmentPreset = itemData.getAttachmentPreset();

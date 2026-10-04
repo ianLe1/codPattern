@@ -33,8 +33,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.LayeredDraw;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -45,7 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-public class TdmHudOverlay implements IGuiOverlay {
+public class TdmHudOverlay implements LayeredDraw.Layer {
 
     private static final int RESULT_PAGE_FADE_TICKS = 12;
     private static final int ROSTER_ROW_STAGGER_TICKS = 6;
@@ -169,11 +169,14 @@ public class TdmHudOverlay implements IGuiOverlay {
     }
 
     @Override
-    public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         if (!shouldRenderHud()) {
             return;
         }
 
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
+        int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         Font font = Minecraft.getInstance().font;
         renderCountdownOverlay(graphics, font, screenWidth, screenHeight);
         if (ClientTdmState.isBlackoutActive()) {
@@ -1173,8 +1176,8 @@ public class TdmHudOverlay implements IGuiOverlay {
             return;
         }
 
-        ResourceLocation skin = Minecraft.getInstance().getSkinManager()
-                .getInsecureSkinLocation(new GameProfile(player.uuid(), player.name()));
+        net.minecraft.client.resources.PlayerSkin skin = Minecraft.getInstance().getSkinManager()
+                .getInsecureSkin(new GameProfile(player.uuid(), player.name()));
 
         if (safeAlpha < 255) {
             RenderSystem.enableBlend();

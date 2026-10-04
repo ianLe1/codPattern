@@ -82,7 +82,7 @@ public class BackpackMenuScreen extends Screen {
     @Override
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         float revealFactor = screenRevealProgress();
-        this.renderBackground(pGuiGraphics);
+        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         renderHeaderBar(pGuiGraphics, revealFactor);
         renderBackpackGridBackdrop(pGuiGraphics, revealFactor);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
@@ -298,7 +298,7 @@ public class BackpackMenuScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics pGuiGraphics) {
+    public void renderBackground(@NotNull GuiGraphics pGuiGraphics, int mouseX, int mouseY, float partialTick) {
         pGuiGraphics.fillGradient(0, 0, this.width, this.height, CodTheme.BG_TOP, CodTheme.BG_BOTTOM);
     }
 

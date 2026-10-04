@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "GPL-3.0-only"
+
+[[mods]]
+modId = "codpattern"
+version = "0.8.6b-1.21.1-port"
+displayName = "COD Pattern"
+authors = "popura404"
+description = '''COD-style backpack, weapon customization and team deathmatch expansion for TaCZ. 1.21.1 NeoForge port.'''
+
+[[dependencies.codpattern]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.codpattern]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.codpattern]]
+modId = "tacz"
+type = "required"
+versionRange = "[1.1.6,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.codpattern]]
+modId = "lrtactical"
+type = "optional"
+versionRange = "[0.3.0,)"
+ordering = "AFTER"
+side = "BOTH"

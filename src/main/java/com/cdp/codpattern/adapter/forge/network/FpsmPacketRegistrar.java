@@ -10,7 +10,7 @@ import com.phasetranscrystal.fpsmatch.common.packet.OpenSpawnPointToolScreenS2CP
 import com.phasetranscrystal.fpsmatch.common.packet.RemoveDebugDataByPrefixS2CPacket;
 import com.phasetranscrystal.fpsmatch.common.packet.SpawnPointToolActionC2SPacket;
 import com.phasetranscrystal.fpsmatch.common.packet.ToolInteractionC2SPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class FpsmPacketRegistrar {
     private FpsmPacketRegistrar() {

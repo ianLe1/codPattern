@@ -1,3 +1,6 @@
+> **本分支是 codPattern 的 1.21.1 NeoForge 移植分支（`1.21.1-neoforge-port`）**：从 1.20.1 Forge 移植到 1.21.1 NeoForge。
+> 改动与构建说明见 [PORT-README.md](PORT-README.md)。下面是上游原始 README。
+
 # COD Pattern
 
 [中文文档](docs/README.md) | [English README](docs/README.en.md) | [详细 Guide](docs/GUIDE.md) | [Q&A](docs/QANDA.md) | [更新日志](docs/CHANGES.md)

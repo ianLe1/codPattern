@@ -11,6 +11,7 @@ import com.cdp.codpattern.compat.taczaddon.TaczAddonRefitCompat;
 import com.cdp.codpattern.core.refit.AttachmentEditSession;
 import com.cdp.codpattern.core.refit.AttachmentEditSessionManager;
 import com.cdp.codpattern.core.refit.AttachmentPresetUtil;
+import com.cdp.codpattern.adapter.neoforge.nbt.ItemNbt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -66,7 +67,7 @@ public final class AttachmentPresetSaveService {
 
             String builtPresetPayload = AttachmentPresetUtil.buildPresetFromGun(gunStack).toString();
             String itemId = gunStack.getItem().builtInRegistryHolder().key().location().toString();
-            String nbtString = gunStack.hasTag() ? gunStack.getTag().toString() : "";
+            String nbtString = ItemNbt.has(gunStack) ? ItemNbt.get(gunStack).toString() : "";
 
             String uuid = player.getUUID().toString();
             Path backpackPath = ConfigPath.SERVERBACKPACK.getPath(player.server);

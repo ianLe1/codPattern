@@ -107,21 +107,21 @@ public class ModeSelectScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         if (maxScrollOffset <= 0) {
-            return super.mouseScrolled(mouseX, mouseY, delta);
+            return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
         }
         int bandTop = modeBandY - scaled(BASE_BAND_BACKDROP_PADDING);
         int bandBottom = modeBandY + modeButtonHeight + scaled(BASE_BAND_BACKDROP_PADDING);
         if (mouseY >= bandTop && mouseY <= bandBottom) {
-            if (delta > 0.0d) {
+            if (deltaY > 0.0d) {
                 scrollLeft();
-            } else if (delta < 0.0d) {
+            } else if (deltaY < 0.0d) {
                 scrollRight();
             }
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, deltaX, deltaY);
     }
 
     @Override
@@ -252,7 +252,7 @@ public class ModeSelectScreen extends Screen {
     }
 
     private void renderModeBackground(GuiGraphics graphics, float revealFactor) {
-        renderDirtBackground(graphics);
+        renderTransparentBackground(graphics);
         ModePreviewPanel.renderFullscreenBase(
                 graphics,
                 this.width,

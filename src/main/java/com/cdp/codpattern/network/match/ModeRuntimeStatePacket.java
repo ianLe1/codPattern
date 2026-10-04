@@ -7,7 +7,7 @@ import com.cdp.codpattern.app.match.model.ModeRuntimeStateSnapshot;
 import com.cdp.codpattern.app.match.model.RoomSummaryMetric;
 import com.cdp.codpattern.network.handler.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkEvent;
 
 import java.util.LinkedHashMap;
 import java.util.List;

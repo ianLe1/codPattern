@@ -730,7 +730,7 @@ public final class ClientMatchStateStore {
                 float pitch = 1.0f + (5 - secondsLeft) * 0.15f;
                 player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8f, pitch);
             } else {
-                player.playNotifySound(SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.PLAYERS, 0.5f, 1.2f);
+                player.playNotifySound(SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.PLAYERS, 0.5f, 1.2f);
             }
         }
 
@@ -741,13 +741,13 @@ public final class ClientMatchStateStore {
 
         if (!pendingPhaseCue.isEmpty()) {
             switch (pendingPhaseCue) {
-                case "countdown" -> player.playNotifySound(SoundEvents.NOTE_BLOCK_HAT.get(), SoundSource.PLAYERS, 0.7f,
+                case "countdown" -> player.playNotifySound(SoundEvents.NOTE_BLOCK_HAT.value(), SoundSource.PLAYERS, 0.7f,
                         0.9f);
-                case "playing" -> player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.PLAYERS, 0.9f,
+                case "playing" -> player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 0.9f,
                         1.15f);
                 case "ended" -> {
-                    player.playNotifySound(SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.45f, 1.3f);
-                    player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.PLAYERS, 0.8f, 0.7f);
+                    player.playNotifySound(SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.45f, 1.3f);
+                    player.playNotifySound(SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.PLAYERS, 0.8f, 0.7f);
                 }
                 default -> {
                 }

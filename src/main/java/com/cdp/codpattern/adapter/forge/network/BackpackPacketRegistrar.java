@@ -10,7 +10,7 @@ import com.cdp.codpattern.network.RequestWeaponFilterPacket;
 import com.cdp.codpattern.network.SelectBackpackPacket;
 import com.cdp.codpattern.network.SyncBackpackConfigPacket;
 import com.cdp.codpattern.network.SyncWeaponFilterPacket;
-import net.minecraftforge.network.NetworkDirection;
+import com.cdp.codpattern.adapter.neoforge.network.NetworkDirection;
 
 final class BackpackPacketRegistrar {
     private BackpackPacketRegistrar() {

@@ -1,5 +1,6 @@
 package com.cdp.codpattern.app.match.gametest;
 
+import net.minecraft.server.network.CommonListenerCookie;
 import com.cdp.codpattern.app.match.model.RoomId;
 import com.cdp.codpattern.app.match.runtime.termination.*;
 import com.cdp.codpattern.app.tdm.service.WarmupMovementLockService;
@@ -7,6 +8,7 @@ import com.cdp.codpattern.compat.fpsmatch.map.CodTdmMap;
 import com.mojang.authlib.GameProfile;
 import com.phasetranscrystal.fpsmatch.core.FPSMCore;
 import com.phasetranscrystal.fpsmatch.core.data.AreaData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -24,8 +26,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.gametest.GameTestHolder;
-import net.minecraftforge.gametest.PrefixGameTestTemplate;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 import java.util.*;
 
 @GameTestHolder("codpattern")
@@ -49,9 +51,11 @@ public final class RoomTerminationGameTests {
         record.armed = true; record.recoveryPending = true; record.clearInventory = true;
         record.endTarget = new PlayerRecoveryRecord.Target("fixture:missing_dimension",0,0,0,0,0);
         record.customActions.put("fixture:unavailable", "");
-        var own = new AttributeModifier(UUID.randomUUID(), "fixture-owned", .2, AttributeModifier.Operation.ADDITION);
-        var foreign = new AttributeModifier(UUID.randomUUID(), "other-mod", .1, AttributeModifier.Operation.ADDITION);
-        record.attributes.put(own.getId().toString(), new PlayerRecoveryRecord.AttributeUndo("minecraft:generic.movement_speed", own.getName(), own.getAmount(), own.getOperation().toValue()));
+        var own = new AttributeModifier(ResourceLocation.parse("codpattern:fixture_owned"), .2,
+                AttributeModifier.Operation.ADD_VALUE);
+        var foreign = new AttributeModifier(ResourceLocation.parse("codpattern:other_mod"), .1,
+                AttributeModifier.Operation.ADD_VALUE);
+        record.attributes.put(own.id().toString(), new PlayerRecoveryRecord.AttributeUndo("minecraft:generic.movement_speed", own.id().toString(), own.amount(), own.operation().id()));
         var speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
         speed.addTransientModifier(own); speed.addTransientModifier(foreign);
         WarmupMovementLockService.lock(player);
@@ -69,7 +73,7 @@ public final class RoomTerminationGameTests {
         helper.assertTrue(player.gameMode.getGameModeForPlayer()==GameType.ADVENTURE, "main executor restores spectator mode independently");
         helper.assertTrue(!player.noPhysics && player.getInventory().isEmpty(), "basic control and equipment recovery must run");
         helper.assertTrue(player.position().distanceToSqr(landing.getX()+.5,landing.getY(),landing.getZ()+.5)<.01, "missing end dimension must use verified return location");
-        helper.assertTrue(speed.getModifier(own.getId())==null && speed.getModifier(foreign.getId())!=null, "only owned attribute is removed");
+        helper.assertTrue(speed.getModifier(own.id())==null && speed.getModifier(foreign.id())!=null, "only owned attribute is removed");
         helper.assertTrue(!record.recovered && record.failures.containsKey("custom:fixture:unavailable"), "missing addon action remains pending");
         player.getInventory().setItem(0,new ItemStack(Items.DIAMOND));
         executor.recover(record, player);
@@ -117,12 +121,13 @@ public final class RoomTerminationGameTests {
             var pending=service.forceEnd(level.getServer().createCommandSourceStack(),room,generation);
             helper.assertTrue(pending.outcome()==ForceEndCoordinator.Outcome.PENDING && service.hasLease(room), "unloaded entity keeps occupancy and retry evidence");
             helper.assertFalse(unrelated.isRemoved(), "unregistered entities remain untouched");
-            var tick = new net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent(delayed);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(tick);
+            var tick = new net.neoforged.neoforge.event.tick.EntityTickEvent.Pre(delayed);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(tick);
             helper.assertTrue(tick.isCanceled(), "pending entity cannot keep ticking after termination");
-            var attack = new net.minecraftforge.event.entity.living.LivingAttackEvent(unrelated,
-                    level.damageSources().mobAttack(delayed), 1);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(attack);
+            var attack = new net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent(unrelated,
+                    new net.neoforged.neoforge.common.damagesource.DamageContainer(
+                            level.damageSources().mobAttack(delayed), 1));
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(attack);
             helper.assertTrue(attack.isCanceled(), "pending entity cannot damage players or other entities");
             level.addFreshEntity(delayed);
             helper.assertTrue(delayed.isRemoved(), "late entity load is reclaimed before it can act");
@@ -146,8 +151,9 @@ public final class RoomTerminationGameTests {
     }
 
     private static ServerPlayer player(GameTestHelper helper) {
-        var player = new ServerPlayer(helper.getLevel().getServer(), helper.getLevel(), new GameProfile(UUID.randomUUID(), "recovery-test"));
-        player.connection = new ServerGamePacketListenerImpl(helper.getLevel().getServer(), new Connection(PacketFlow.SERVERBOUND), player) {
+        var player = new ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
+                new GameProfile(UUID.randomUUID(), "recovery-test"), net.minecraft.server.level.ClientInformation.createDefault());
+        player.connection = new ServerGamePacketListenerImpl(helper.getLevel().getServer(), new Connection(PacketFlow.SERVERBOUND), player, CommonListenerCookie.createInitial(player.getGameProfile(), false)) {
             @Override public void send(Packet<?> packet) { }
             @Override public void send(Packet<?> packet, PacketSendListener listener) { }
             @Override public void teleport(double x,double y,double z,float yaw,float pitch) { player.moveTo(x,y,z,yaw,pitch); }
